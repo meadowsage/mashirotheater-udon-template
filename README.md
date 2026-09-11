@@ -10,7 +10,7 @@ Unity プロジェクトの `Assets/` 直下に clone して使います。
 | GitHub アカウント | https://github.com/ で作成 |
 | GitHub Desktop | https://desktop.github.com/ をインストールし、GitHub アカウントでサインイン |
 | Unity プロジェクト | VRChat Creator Companion（VCC）で **World** テンプレートから新規プロジェクトを作成し、一度開けることを確認 |
-| AI コーディングツール | Claude Code（デスクトップアプリ または VS Code 拡張）か、ChatGPT Codex のどちらか。有料プランへの加入が必要 |
+| AI コーディングツール | [Claude Code on the web](https://claude.ai/code) か [Codex](https://chatgpt.com/codex) のどちらか。有料プランへの加入と、GitHub アカウントの接続（GitHub App のインストール）が必要。ブラウザだけで使うので、エディタやターミナルのインストールは不要 |
 
 ## セットアップ
 
@@ -32,17 +32,20 @@ Unity プロジェクトの `Assets/` 直下に clone して使います。
 
 ## AI に新しいギミックを作らせる
 
-1. AI ツールを、**clone したフォルダ**（`Assets/<リポジトリ名>`）を開いた状態で起動します。
-   - Claude Code: デスクトップアプリでそのフォルダを開くか、ターミナルでそのフォルダに移動して `claude` を実行
-   - Codex: 同様にそのフォルダで起動
-2. 作りたいものを日本語で伝えます。例:
-   > 近づくと自動で開くドアを作って。開閉は全員に同期してほしい。
-3. AI が `<ギミック名>/Mashiro<ギミック名>.cs` と `README.md` を作ります。**AI は `.cs` と `.md` しか作りません。**
-4. Unity に戻り、README の手順どおり `Add Component` します。この時点で Unity が `.meta` と `.asset`（UdonSharp の ProgramAsset）を自動生成します。
-5. Console に赤いエラーが出たら、その文面をコピーして AI に貼り付けます。AI が `.cs` を直すので、Unity に戻って再確認します。
-6. 動いたら GitHub Desktop で **Commit → Push** します。Changes に出ている `.cs` / `.md` / `.meta` / `.asset` を全部含めてください。
+AI への指示はブラウザ上で完結します。AI は GitHub 上のリポジトリを直接読み書きし、結果は Pull で手元に取り込みます。
 
-Claude Code では `/new-gimmick` と入力すると、手順 2〜3 を対話形式で進められます。
+1. GitHub Desktop で **Push origin** し、手元の変更をすべて GitHub に送っておきます。
+2. [claude.ai/code](https://claude.ai/code)（または Codex）を開き、自分のリポジトリを選びます。
+3. 作りたいものを日本語で伝えます。例:
+   > 近づくと自動で開くドアを作って。開閉は全員に同期してほしい。
+4. AI が `<ギミック名>/Mashiro<ギミック名>.cs` と `README.md` を作り、GitHub にブランチを push します。**AI は `.cs` と `.md` しか作りません。**
+5. 画面の **Create PR** を押し、GitHub の PR ページで **Merge pull request → Confirm merge** します。
+6. GitHub Desktop で **Fetch origin → Pull origin** すると、手元にファイルが届きます。
+7. Unity に戻り、README の手順どおり `Add Component` します。この時点で Unity が `.meta` と `.asset`（UdonSharp の ProgramAsset）を自動生成します。
+8. Console に赤いエラーが出たら、その文面をコピーして AI に貼り付けます。AI が `.cs` を直すので、5〜7 を繰り返します。
+9. 動いたら GitHub Desktop で **Commit → Push** します。Changes に出ている `.meta` / `.asset` を全部含めてください。
+
+Claude Code では `/new-gimmick` と入力すると、手順 3〜4 を対話形式で進められます。
 
 ## フォルダ構成
 
@@ -65,7 +68,8 @@ Claude Code では `/new-gimmick` と入力すると、手順 2〜3 を対話形
 | --- | --- |
 | 変更を記録する | Changes で対象にチェック → Summary を書く → **Commit to main** |
 | GitHub に送る | **Push origin** |
-| 他の PC で続きをやる | そちらでも同じ手順で clone → 作業前に **Fetch origin / Pull** |
+| AI が GitHub に置いた変更を手元に持ってくる | GitHub で PR を **Merge** → GitHub Desktop で **Fetch origin → Pull origin** |
+| 他の PC で続きをやる | そちらでも同じ手順で clone → 作業前に **Fetch origin → Pull origin** |
 
 コミットに含めるもの: `.cs`、`.md`、`.meta`、`.asset`。
 含めないもの: Unity プロジェクト側のファイル（`Library/` など。clone したフォルダの外なので通常は出てきません）。
@@ -78,6 +82,8 @@ Claude Code では `/new-gimmick` と入力すると、手順 2〜3 を対話形
 | Add Component のメニューに出てこない | Console にコンパイルエラーが出ている。エラー文を AI に貼る |
 | 別の PC で開いたら参照が外れている | `.meta` をコミットし忘れている。元の PC で `.meta` をコミット・Push する |
 | Interact しても反応しない | GameObject に `Collider` が無い。Box Collider などを追加する |
+| AI が作ったファイルが Unity に出てこない | PR を Merge していないか、Pull していない。GitHub で Merge → GitHub Desktop で Pull |
+| Pull したら「コンフリクト」と言われた | 依頼前の Push を忘れて、手元と GitHub の両方が進んだ。講師に声をかける |
 | ClientSim で同期の動作を確かめたい | VRChat SDK → Build & Test で複数クライアントを起動できる |
 
 ## ライセンス
