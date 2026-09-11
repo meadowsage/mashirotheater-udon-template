@@ -1,0 +1,17 @@
+# Unity が生成する YAML アセットは SmartMerge(UnityYAMLMerge) でマージし、
+# シーン・プレハブ・アセット・meta の不要なコンフリクトを減らす。
+# ※ 実際に効かせるには各自ローカルで一度だけ merge ドライバの登録が必要
+#    （未登録でも通常マージにフォールバックするだけで害はない）。
+#    例: git config merge.unityyamlmerge.name "Unity SmartMerge"
+#        git config merge.unityyamlmerge.driver '"<UnityのUnityYAMLMergeへのパス>" merge -p %O %B %A %A'
+*.unity          merge=unityyamlmerge
+*.prefab         merge=unityyamlmerge
+*.asset          merge=unityyamlmerge
+*.meta           merge=unityyamlmerge
+*.controller     merge=unityyamlmerge
+*.anim           merge=unityyamlmerge
+*.mat            merge=unityyamlmerge
+*.physicMaterial merge=unityyamlmerge
+
+# UdonSharp / C# はテキスト・diff を csharp 扱いに
+*.cs text diff=csharp
