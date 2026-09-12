@@ -31,10 +31,10 @@ Unity プロジェクトの `Assets/` 直下に clone されており、1 ギミ
 
 ## コーディング規約
 
-- 名前空間は **利用者の GitHub ユーザー名** から作る。`git remote -v` に出る `github.com/<owner>/...` の `<owner>` を、英数字以外を取り除いて先頭を大文字にしたもの（例: `vivi` → `Vivi`、`meadow-sage` → `MeadowSage`）。数字で始まる場合は先頭に `U` を付ける。判断に迷ったら利用者に確認する。
+- 名前空間は **利用者の GitHub ユーザー名** から作る。`git remote -v` に出る `github.com/<owner>/...` の `<owner>` を、英数字以外を取り除いて先頭を大文字にしたもの（例: `username` → `Username`、`user-name` → `UserName`）。数字で始まる場合は先頭に `U` を付ける。判断に迷ったら利用者に確認する。
 - `UdonSharpBehaviour` を継承する。
 - `[UdonBehaviourSyncMode(...)]` を**必ず明示**する。同期変数が無ければ `NoVariableSync`、`[UdonSynced]` を使うなら原則 `Manual`。
-- `[AddComponentMenu("<名前空間>/<クラス名を空白区切りにしたもの>")]` を付け、Add Component メニューから探せるようにする（例: `"Vivi/Auto Door"`）。
+- `[AddComponentMenu("<名前空間>/<クラス名を空白区切りにしたもの>")]` を付け、Add Component メニューから探せるようにする（例: `"Username/Auto Door"`）。
 - クラス名は PascalCase（例: `AutoDoor`）。プレフィックスは付けない。private フィールド・メソッドは camelCase。
 - インスペクタに出すフィールドは `[SerializeField]` + `[Tooltip("日本語の説明")]` を付け、`[Header("...")]` でグループ化する。public フィールドで露出させない。
 - コメント・XML ドキュメント（`/// <summary>`）は日本語。「何をしているか」ではなく「なぜそうしているか」を書く。
@@ -54,13 +54,13 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 
-namespace Vivi
+namespace Username
 {
     /// <summary>
     /// 近づくと自動で開き、離れると閉まるドア。開閉は全員に同期する。
     /// </summary>
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-    [AddComponentMenu("Vivi/Auto Door")]
+    [AddComponentMenu("Username/Auto Door")]
     public class AutoDoor : UdonSharpBehaviour
     {
         [Header("対象設定")]
