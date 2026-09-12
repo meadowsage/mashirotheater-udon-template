@@ -21,18 +21,21 @@ Unity プロジェクトの `Assets/` 直下に clone して使います。
 
 ## AI に新しいギミックを作らせる
 
-AI への指示はブラウザ上で完結します。AI は GitHub 上のリポジトリを直接読み書きし、結果は Pull で手元に取り込みます。
+AI への指示はブラウザ上で完結します。AI は GitHub 上のリポジトリを直接読み書きし、結果は PR（Pull Request）として届きます。
 
 1. GitHub Desktop で **Push origin** し、手元の変更をすべて GitHub に送っておきます。
-2. [claude.ai/code](https://claude.ai/code)（または Codex）を開き、自分のリポジトリを選びます。
+2. [Codex](https://chatgpt.com/codex)（または [claude.ai/code](https://claude.ai/code)）を開き、自分のリポジトリを選びます。
 3. 作りたいものを日本語で伝えます。例:
    > 近づくと自動で開くドアを作って。開閉は全員に同期してほしい。
 4. AI が `<ギミック名>/<ギミック名>.cs` と `README.md` を作り、GitHub にブランチを push します。**AI が書くのは `.cs` と `.md` だけです。** UI や Prefab が要るギミックでは、Unity 上で雛形を生成するボタン（Editor 拡張）も一緒に作られます。
-5. 画面の **Create PR** を押し、GitHub の PR ページで **Merge pull request → Confirm merge** します。
-6. GitHub Desktop で **Fetch origin → Pull origin** すると、手元にファイルが届きます。
+5. 画面の **Create PR** を押します。この時点ではまだ Merge しません。
+6. GitHub Desktop の **Current Branch → Pull Requests** からその PR を選ぶと、ブランチが切り替わって手元にファイルが届きます。
 7. Unity に戻ります。Unity が `.cs` を読み込むと、`.meta` と `.asset`（UdonSharp の ProgramAsset）が自動生成されます。README の手順どおり `Add Component` して動作を確認します。
-8. Console に赤いエラーが出たら、その文面をコピーして AI に貼り付けます。AI が `.cs` を直すので、5〜7 を繰り返します。
+8. Console に赤いエラーが出たら、その文面をコピーして AI に貼り付けます。AI が直したら **Fetch origin → Pull origin** して 7 に戻ります。
 9. 動いたら GitHub Desktop で **Commit → Push** します。Changes に出ている `.meta` / `.asset` を全部含めてください。これが最初のコミットになります。
+10. AI に PR の URL を貼って「この PR をレビューして」と頼みます。直してもらったら Pull して再確認します。
+11. AI に「この PR をマージして」と頼みます（できない場合は GitHub の PR ページで **Merge pull request**）。
+12. GitHub Desktop で **Current Branch → main** に戻し、**Fetch origin → Pull origin** します。
 
 Claude Code では `/new-gimmick` と入力すると、手順 3〜4 を対話形式で進められます。
 
@@ -57,9 +60,11 @@ AI の利用枠を節約するコツ: モデルは軽いもの（Claude なら S
 
 | やりたいこと | GitHub Desktop の操作 |
 | --- | --- |
-| 変更を記録する | Changes で対象にチェック → Summary を書く → **Commit to main** |
+| 作業するブランチを切り替える | **Current Branch** → ブランチか PR を選ぶ |
+| 変更を記録する | Changes で対象にチェック → Summary を書く → **Commit to （ブランチ名）** |
 | GitHub に送る | **Push origin** |
-| AI が GitHub に置いた変更を手元に持ってくる | GitHub で PR を **Merge** → GitHub Desktop で **Fetch origin → Pull origin** |
+| AI が GitHub に置いた変更を手元に持ってくる | **Current Branch → Pull Requests** で PR を選ぶ → **Fetch origin → Pull origin** |
+| Merge 済みのギミックを main に反映する | **Current Branch → main** → **Fetch origin → Pull origin** |
 | 他の PC で続きをやる | そちらでも同じ手順で clone → 作業前に **Fetch origin → Pull origin** |
 
 コミットに含めるもの: `.cs`、`.md`、`.meta`、`.asset`。
@@ -73,7 +78,8 @@ AI の利用枠を節約するコツ: モデルは軽いもの（Claude なら S
 | Add Component のメニューに出てこない | Console にコンパイルエラーが出ている。エラー文を AI に貼る |
 | 別の PC で開いたら参照が外れている | `.meta` をコミットし忘れている。元の PC で `.meta` をコミット・Push する |
 | Interact しても反応しない | GameObject に `Collider` が無い。Box Collider などを追加する |
-| AI が作ったファイルが Unity に出てこない | PR を Merge していないか、Pull していない。GitHub で Merge → GitHub Desktop で Pull |
+| AI が作ったファイルが Unity に出てこない | PR のブランチに切り替えていないか、Pull していない。**Current Branch** で PR を選ぶ → Pull |
+| Merge したのに main にギミックが無い | 手元が PR のブランチのまま。**Current Branch → main** → Pull |
 | Pull したら「コンフリクト」と言われた | 依頼前の Push を忘れて、手元と GitHub の両方が進んだ。講師に声をかける |
 | ClientSim で同期の動作を確かめたい | VRChat SDK → Build & Test で複数クライアントを起動できる |
 
