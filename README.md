@@ -27,7 +27,7 @@ AI への指示はブラウザ上で完結します。AI は GitHub 上のリポ
 2. [claude.ai/code](https://claude.ai/code)（または Codex）を開き、自分のリポジトリを選びます。
 3. 作りたいものを日本語で伝えます。例:
    > 近づくと自動で開くドアを作って。開閉は全員に同期してほしい。
-4. AI が `<ギミック名>/<ギミック名>.cs` と `README.md` を作り、GitHub にブランチを push します。**AI は `.cs` と `.md` しか作りません。**
+4. AI が `<ギミック名>/<ギミック名>.cs` と `README.md` を作り、GitHub にブランチを push します。**AI が書くのは `.cs` と `.md` だけです。** UI や Prefab が要るギミックでは、Unity 上で雛形を生成するボタン（Editor 拡張）も一緒に作られます。
 5. 画面の **Create PR** を押し、GitHub の PR ページで **Merge pull request → Confirm merge** します。
 6. GitHub Desktop で **Fetch origin → Pull origin** すると、手元にファイルが届きます。
 7. Unity に戻ります。Unity が `.cs` を読み込むと、`.meta` と `.asset`（UdonSharp の ProgramAsset）が自動生成されます。README の手順どおり `Add Component` して動作を確認します。
@@ -47,7 +47,8 @@ AI の利用枠を節約するコツ: モデルは軽いもの（Claude なら S
 ├── <ギミック名>/       自分で作ったギミック（1 ギミック = 1 フォルダ）
 │   ├── <ギミック名>.cs
 │   ├── <ギミック名>.asset   Unity が自動生成（コミットする）
-│   └── README.md
+│   ├── README.md
+│   └── Editor/            雛形生成ボタン（UI や Prefab が要るギミックのみ）
 ├── Editor/            ProgramAsset を自動生成する Unity 側の補助スクリプト（触らない）
 └── .claude/           Claude Code の設定とスキル
 ```

@@ -6,9 +6,9 @@ Unity プロジェクトの `Assets/` 直下に clone されており、1 ギミ
 
 ## 絶対ルール（これだけは守る）
 
-1. **AI が作成・編集してよいのは `.cs` と `.md` だけです。**
-   `.meta` / `.asset` / `.prefab` / `.unity` / `.mat` / `.anim` などの Unity アセットは作成も編集もしないでください。
-   これらは Unity が生成・管理します。
+1. **AI が直接書くのは `.cs` と `.md` だけです。**
+   `.meta` / `.asset` / `.prefab` / `.unity` / `.mat` / `.anim` などの Unity アセットを YAML として手書き・編集しないでください。
+   Prefab や UI 階層が必要なときは、下記「Prefab・雛形を生成する Editor 拡張」のとおり、Unity 上で生成するコードを書きます。
 2. **新しい `.cs` を作ったら、利用者に「Unity に戻って Add Component してください」と伝えてください。**
    Unity が `.cs` を読み込むと、このリポジトリの Editor 拡張が同じフォルダに同名の ProgramAsset（`.asset`）を自動生成します。
    `.cs` と同じ名前の `.asset` と、各ファイルの `.meta` が生成されたことを確認してもらってください。
@@ -24,9 +24,10 @@ Unity プロジェクトの `Assets/` 直下に clone されており、1 ギミ
 1. ギミック名（英語 PascalCase）と、動作の要点を 1〜3 行で確認する。曖昧な点は最初にまとめて質問する。
 2. リポジトリ直下に `<ギミック名>/` フォルダを作る。
 3. `<ギミック名>/<ギミック名>.cs` を作る。書き方は下記「コーディング規約」と「コードの雛形」に従う。
-4. `<ギミック名>/README.md` を作る。構成は下記「README の書き方」に従う。
-5. 利用者に次の 3 つを伝える。
-   - Unity に戻り、対象 GameObject に `Add Component > <名前空間> > <ギミック名>` でコンポーネントを追加する
+4. Prefab や UI 階層、複数オブジェクトの配線が必要なら、`<ギミック名>/Editor/<ギミック名>Editor.cs` に雛形を生成する Editor 拡張を作る（下記「Prefab・雛形を生成する Editor 拡張」）。1 つの GameObject にコンポーネントを付けるだけで済むギミックには不要。
+5. `<ギミック名>/README.md` を作る。構成は下記「README の書き方」に従う。
+6. 利用者に次の 3 つを伝える。
+   - Unity に戻り、対象 GameObject に `Add Component > <名前空間> > <ギミック名>` でコンポーネントを追加する（Editor 拡張を作った場合は、その生成ボタンを押す）
    - Console に赤いエラーが出ていたら、その文面をそのまま貼り付けてもらう
    - 動作確認後、`.cs` / `README.md` と、Unity が生成した `.meta` / `.asset` をまとめてコミットする
 
@@ -86,6 +87,23 @@ namespace Vivi
 }
 ```
 
+## Prefab・雛形を生成する Editor 拡張
+
+原則として、次のいずれかに当てはまるギミックには、Unity 上で雛形を生成する Editor 拡張を併せて作ってください。
+
+- Canvas・ボタン・テキストなどの UI が要る
+- 複数の GameObject を決まった階層で並べる必要がある
+- 複数のコンポーネント間の参照を配線する必要がある
+
+作り方の要点:
+
+- 置き場所は `<ギミック名>/Editor/<ギミック名>Editor.cs`。ファイル全体を `#if !COMPILER_UDONSHARP && UNITY_EDITOR` 〜 `#endif` で囲む。
+- ギミック本体のカスタムインスペクタ（`[CustomEditor(typeof(<ギミック名>))]` の `Editor` 派生）にして、「構成を生成」ボタンを置く。`OnInspectorGUI` では先に `UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target)` を呼び、続けて `DrawDefaultInspector()` で通常の項目を出す。
+- 生成は必ず Unity の API で行う。`new GameObject(...)`、`UdonSharpUndo.AddComponent<T>(gameObject)`、参照の書き込みは `SerializedObject` で行い `UdonSharpEditorUtility.CopyProxyToUdon(behaviour)` で反映、Prefab 化は `PrefabUtility.SaveAsPrefabAsset(go, path)`。`.prefab` の YAML を手書きしない（proxy と UdonBehaviour の対応が壊れ、Play 時にクラッシュする）。
+- Prefab の保存先はギミックのフォルダ内（例: `<ギミック名>/<ギミック名>.prefab`）。同名があれば確認ダイアログを出してから作り直す。
+- 生成物は「構造と配線が正しい状態」までを担保する。サイズ・色・フォントなどの見た目は利用者が Unity 上で調整する前提で、決め打ちの値で構わない。
+- README の「セットアップ」に、どのボタンを押すと何が生成されるかを書く。
+
 ## UdonSharp で使えないもの（AI がよく間違える）
 
 UdonSharp は C# のサブセットです。次は**使えません**。代わりに右の書き方をしてください。
@@ -125,7 +143,7 @@ public メソッドを追加・変更・削除したときは、同じコミッ�
 
 利用者の AI 利用枠は小さいことがあります。次を目安に、必要以上に読み書きしないでください。厳密な制限ではありません。
 
-- 作業前にリポジトリ全体を探索しない。まず読むのは CLAUDE.md だけで足ります。必要になったら他のファイルを読んでください。`Editor/` は Unity 側の補助スクリプトなので触りません。
+- 作業前にリポジトリ全体を探索しない。まず読むのは CLAUDE.md だけで足ります。必要になったら他のファイルを読んでください。リポジトリ直下の `Editor/` はテンプレート付属の補助スクリプトなので触りません。
 - コンパイルやテストは試みない。クラウド環境に Unity は無く、コンパイルは利用者が Unity で行います。
 - 説明は要点だけにする。書いたコードをチャットに貼り直さない。
 - README は利用者が読む分だけ書く（目安 40 行以内）。

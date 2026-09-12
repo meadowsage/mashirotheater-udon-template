@@ -17,14 +17,15 @@ description: 新しい Udon ギミック（UdonSharp）を 1 フォルダ分作�
 3. **フォルダと `.cs` を作る。** `<ギミック名>/<ギミック名>.cs`。
    名前空間は `CLAUDE.md` の「コーディング規約」どおり GitHub ユーザー名から決め、「コードの雛形」の書式に合わせる。
    同期が必要なら `[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]` と `[UdonSynced]`、不要なら `NoVariableSync`。
-4. **`README.md` を作る。** `CLAUDE.md` の「README の書き方」の構成で、簡潔に。
-5. **利用者に次の操作を伝える。** 短く、この順で。
-   1. Unity に戻り、対象 GameObject に `Add Component > <名前空間> > <ギミック名>` を追加する
+4. **Editor 拡張の要否を判断する。** UI・複数オブジェクトの階層・コンポーネント間の配線が要るなら、`<ギミック名>/Editor/<ギミック名>Editor.cs` に雛形生成のボタンを作る（`CLAUDE.md` の「Prefab・雛形を生成する Editor 拡張」）。単一コンポーネントで済むなら作らない。
+5. **`README.md` を作る。** `CLAUDE.md` の「README の書き方」の構成で、簡潔に。Editor 拡張を作った場合は、生成ボタンの場所と生成物を「セットアップ」に書く。
+6. **利用者に次の操作を伝える。** 短く、この順で。
+   1. Unity に戻り、対象 GameObject に `Add Component > <名前空間> > <ギミック名>` を追加する（Editor 拡張がある場合は、続けてインスペクタの生成ボタンを押す）
    2. インスペクタの各項目を設定する（README の「セットアップ」を指す）
    3. Console に赤いエラーがあれば、その文面を貼り付けてもらう
    4. 動いたら、`.cs` / `README.md` と Unity が生成した `.meta` / `.asset` をまとめてコミットする
 
 ## やってはいけないこと
 
-- `.meta` / `.asset` / `.prefab` / `.unity` を作る・編集する
+- `.meta` / `.asset` / `.prefab` / `.unity` を YAML として直接書く・編集する（Prefab は Editor 拡張で Unity に作らせる）
 - 依頼されていない機能を足す
