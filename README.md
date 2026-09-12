@@ -18,17 +18,6 @@ Unity プロジェクトの `Assets/` 直下に clone して使います。
 2. GitHub Desktop で **File → Clone repository** から作ったリポジトリを選び、**Local path** に Unity プロジェクトの `Assets` フォルダを指定して clone します。
    例: `C:\Users\you\MyWorld\Assets\my-udon-gimmicks`
 3. Unity でプロジェクトを開きます。Project ウィンドウに clone したフォルダが見え、Console にエラーが出ていなければ準備完了です。
-4. GitHub Desktop の Changes に `.meta` ファイルが並んでいたら、そのまま **Commit to main → Push origin** してください（Unity が生成した `.meta` は必ずコミットします）。
-
-## お手本を動かしてみる
-
-`Samples/SyncedToggleButton/` に、押すと対象の表示 / 非表示が切り替わり全員に同期されるボタンが入っています。
-
-1. Hierarchy で Cube を作り、`Add Component > MashiroTheater > Mashiro Synced Toggle Button` を追加します。
-2. インスペクタの **Target** に、切り替えたい別の GameObject を入れます。
-3. Play ボタンを押し（ClientSim が起動します）、Cube に近づいて Interact（キーボードなら E）すると Target が消えたり出たりします。
-
-詳しい説明は [`Samples/SyncedToggleButton/README.md`](Samples/SyncedToggleButton/README.md) を見てください。
 
 ## AI に新しいギミックを作らせる
 
@@ -38,12 +27,12 @@ AI への指示はブラウザ上で完結します。AI は GitHub 上のリポ
 2. [claude.ai/code](https://claude.ai/code)（または Codex）を開き、自分のリポジトリを選びます。
 3. 作りたいものを日本語で伝えます。例:
    > 近づくと自動で開くドアを作って。開閉は全員に同期してほしい。
-4. AI が `<ギミック名>/Mashiro<ギミック名>.cs` と `README.md` を作り、GitHub にブランチを push します。**AI は `.cs` と `.md` しか作りません。**
+4. AI が `<ギミック名>/<ギミック名>.cs` と `README.md` を作り、GitHub にブランチを push します。**AI は `.cs` と `.md` しか作りません。**
 5. 画面の **Create PR** を押し、GitHub の PR ページで **Merge pull request → Confirm merge** します。
 6. GitHub Desktop で **Fetch origin → Pull origin** すると、手元にファイルが届きます。
 7. Unity に戻り、README の手順どおり `Add Component` します。この時点で Unity が `.meta` と `.asset`（UdonSharp の ProgramAsset）を自動生成します。
 8. Console に赤いエラーが出たら、その文面をコピーして AI に貼り付けます。AI が `.cs` を直すので、5〜7 を繰り返します。
-9. 動いたら GitHub Desktop で **Commit → Push** します。Changes に出ている `.meta` / `.asset` を全部含めてください。
+9. 動いたら GitHub Desktop で **Commit → Push** します。Changes に出ている `.meta` / `.asset` を全部含めてください。これが最初のコミットになります。
 
 Claude Code では `/new-gimmick` と入力すると、手順 3〜4 を対話形式で進められます。
 
@@ -55,11 +44,9 @@ AI の利用枠を節約するコツ: モデルは軽いもの（Claude なら S
 <リポジトリ>/
 ├── CLAUDE.md          AI 向けの規約（Claude Code が読む）
 ├── AGENTS.md          同上（Codex が読む。中身は CLAUDE.md を参照するだけ）
-├── Samples/           お手本ギミック
-│   └── SyncedToggleButton/
 ├── <ギミック名>/       自分で作ったギミック（1 ギミック = 1 フォルダ）
-│   ├── Mashiro<ギミック名>.cs
-│   ├── Mashiro<ギミック名>.asset   Unity が自動生成（コミットする）
+│   ├── <ギミック名>.cs
+│   ├── <ギミック名>.asset   Unity が自動生成（コミットする）
 │   └── README.md
 └── .claude/           Claude Code の設定とスキル
 ```
