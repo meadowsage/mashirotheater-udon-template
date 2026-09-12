@@ -11,12 +11,8 @@
       "Bash(find:*)"
     ],
     "deny": [
-      "Write(**/*.meta)",
-      "Write(**/*.asset)",
       "Write(**/*.prefab)",
       "Write(**/*.unity)",
-      "Edit(**/*.meta)",
-      "Edit(**/*.asset)",
       "Edit(**/*.prefab)",
       "Edit(**/*.unity)"
     ]

@@ -6,30 +6,28 @@ Unity プロジェクトの `Assets/` 直下に clone されており、1 ギミ
 
 ## 絶対ルール（これだけは守る）
 
-1. **AI が直接書くのは `.cs` と `.md` だけです。**
-   `.meta` / `.asset` / `.prefab` / `.unity` / `.mat` / `.anim` などの Unity アセットを YAML として手書き・編集しないでください。
-   Prefab や UI 階層が必要なときは、下記「Prefab・雛形を生成する Editor 拡張」のとおり、Unity 上で生成するコードを書きます。
-2. **新しい `.cs` を作ったら、利用者に「Unity に戻って Add Component してください」と伝えてください。**
-   Unity が `.cs` を読み込むと、このリポジトリの Editor 拡張が同じフォルダに同名の ProgramAsset（`.asset`）を自動生成します。
-   `.cs` と同じ名前の `.asset` と、各ファイルの `.meta` が生成されたことを確認してもらってください。
-3. **コミットには Unity が生成した `.meta` と `.asset` を必ず含めてください。**
+1. **AI が書くのは `.cs`、`.md`、そして新規ファイル用の `.meta` と UdonSharp の `.asset` です。**
+   `.prefab` / `.unity` / `.mat` / `.anim` などを YAML として手書き・編集しないでください。Prefab や UI 階層が必要なときは、下記「Prefab・雛形を生成する Editor 拡張」のとおり Unity 上で生成するコードを書きます。
+2. **新しく作ったファイル・フォルダには、必ず `.meta` を同じコミットに含めてください。** 新しい `UdonSharpBehaviour` の `.cs` には、同名の `.asset`（ProgramAsset）と `.asset.meta` も一緒に作ります。書式は下記「Unity 用ファイルの雛形」どおりにし、GUID は新しく生成します。
    `.meta` が無いと他の環境で参照が切れ、`.asset` が無いと Play モードで Unity がクラッシュします。
-4. **`git add -A` / `git commit -a` は使わないでください。** 対象ファイルを明示的に `git add` します。
-5. **コンパイルエラーは利用者が Unity の Console から貼り付けてくれます。** 修正は `.cs` の範囲で行ってください。
+3. **既存の `.meta` と `.asset` は編集しないでください。** Unity がコンパイルのたびに `.asset` を書き換えますが、それは Unity に任せます。
+4. **新しい `.cs` を作ったら、利用者に「Unity に戻って Add Component してください」と伝えてください。** Unity が読み込むとコンパイルされ、`.asset` の中身が更新されます。利用者にはその更新を commit してもらいます。
+5. **`git add -A` / `git commit -a` は使わないでください。** 対象ファイルを明示的に `git add` します。
+6. **コンパイルエラーは利用者が Unity の Console から貼り付けてくれます。** 修正は `.cs` の範囲で行ってください。
 
 ## 新規ギミックの作り方（手順）
 
 利用者から「〜するギミックを作って」と依頼されたら、次の順で進めてください。
 
 1. ギミック名（英語 PascalCase）と、動作の要点を 1〜3 行で確認する。曖昧な点は最初にまとめて質問する。
-2. リポジトリ直下に `<ギミック名>/` フォルダを作る。
-3. `<ギミック名>/<ギミック名>.cs` を作る。書き方は下記「コーディング規約」と「コードの雛形」に従う。
+2. リポジトリ直下に `<ギミック名>/` フォルダを作り、`<ギミック名>.meta` を添える。
+3. `<ギミック名>/<ギミック名>.cs` を作る。書き方は下記「コーディング規約」と「コードの雛形」に従う。同時に `<ギミック名>.cs.meta`、`<ギミック名>.asset`、`<ギミック名>.asset.meta` を「Unity 用ファイルの雛形」どおりに作る。
 4. Prefab や UI 階層、複数オブジェクトの配線が必要なら、`<ギミック名>/Editor/<ギミック名>Editor.cs` に雛形を生成する Editor 拡張を作る（下記「Prefab・雛形を生成する Editor 拡張」）。1 つの GameObject にコンポーネントを付けるだけで済むギミックには不要。
-5. `<ギミック名>/README.md` を作る。構成は下記「README の書き方」に従う。
+5. `<ギミック名>/README.md` と `README.md.meta` を作る。構成は下記「README の書き方」に従う。
 6. 利用者に次の 3 つを伝える。
    - Unity に戻り、対象 GameObject に `Add Component > <名前空間> > <ギミック名>` でコンポーネントを追加する（Editor 拡張を作った場合は、その生成ボタンを押す）
    - Console に赤いエラーが出ていたら、その文面をそのまま貼り付けてもらう
-   - 動作確認後、`.cs` / `README.md` と、Unity が生成した `.meta` / `.asset` をまとめてコミットする
+   - 動作確認後、Unity が更新した `.asset` をコミットする
 
 ## コーディング規約
 
@@ -94,6 +92,101 @@ namespace Vivi
 }
 ```
 
+## Unity 用ファイルの雛形
+
+GUID は 32 桁の小文字 16 進数で、ファイルごとに新しく生成する（例: `python3 -c 'import uuid;print(uuid.uuid4().hex)'`）。同じ GUID を 2 か所で使わない。
+
+フォルダの `.meta`（`<フォルダ名>.meta`）:
+
+```yaml
+fileFormatVersion: 2
+guid: <新しい GUID>
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+```
+
+`.cs` の `.meta`（`<名前>.cs.meta`）:
+
+```yaml
+fileFormatVersion: 2
+guid: <新しい GUID>
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+```
+
+`.md` の `.meta`（`README.md.meta`）:
+
+```yaml
+fileFormatVersion: 2
+guid: <新しい GUID>
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+```
+
+UdonSharp の ProgramAsset（`<クラス名>.asset`。`UdonSharpBehaviour` を継承するクラス 1 つにつき 1 つ。`m_Script` の GUID は固定値、`sourceCsScript` の GUID は対応する `.cs.meta` の GUID）:
+
+```yaml
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
+  m_Name: <クラス名>
+  m_EditorClassIdentifier: 
+  serializedUdonProgramAsset: {fileID: 0}
+  udonAssembly: 
+  assemblyError: 
+  sourceCsScript: {fileID: 11500000, guid: <.cs.meta と同じ GUID>, type: 3}
+  scriptVersion: 2
+  compiledVersion: 0
+  behaviourSyncMode: 0
+  hasInteractEvent: 0
+  scriptID: 0
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+```
+
+`.asset` の `.meta`（`<クラス名>.asset.meta`）:
+
+```yaml
+fileFormatVersion: 2
+guid: <新しい GUID>
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+```
+
 ## Prefab・雛形を生成する Editor 拡張
 
 原則として、次のいずれかに当てはまるギミックには、Unity 上で雛形を生成する Editor 拡張を併せて作ってください。
@@ -104,7 +197,7 @@ namespace Vivi
 
 作り方の要点:
 
-- 置き場所は `<ギミック名>/Editor/<ギミック名>Editor.cs`。ファイル全体を `#if !COMPILER_UDONSHARP && UNITY_EDITOR` 〜 `#endif` で囲む。
+- 置き場所は `<ギミック名>/Editor/<ギミック名>Editor.cs`。ファイル全体を `#if !COMPILER_UDONSHARP && UNITY_EDITOR` 〜 `#endif` で囲む。`Editor.meta` と `<ギミック名>Editor.cs.meta` も作る（Editor スクリプトに `.asset` は不要）。
 - ギミック本体のカスタムインスペクタ（`[CustomEditor(typeof(<ギミック名>))]` の `Editor` 派生）にして、「構成を生成」ボタンを置く。`OnInspectorGUI` では先に `UdonSharpGUI.DrawDefaultUdonSharpBehaviourHeader(target)` を呼び、続けて `DrawDefaultInspector()` で通常の項目を出す。
 - 生成は必ず Unity の API で行う。`new GameObject(...)`、`UdonSharpUndo.AddComponent<T>(gameObject)`、参照の書き込みは `SerializedObject` で行い `UdonSharpEditorUtility.CopyProxyToUdon(behaviour)` で反映、Prefab 化は `PrefabUtility.SaveAsPrefabAsset(go, path)`。`.prefab` の YAML を手書きしない（proxy と UdonBehaviour の対応が壊れ、Play 時にクラッシュする）。
 - Prefab の保存先はギミックのフォルダ内（例: `<ギミック名>/<ギミック名>.prefab`）。同名があれば確認ダイアログを出してから作り直す。
@@ -150,7 +243,7 @@ public メソッドを追加・変更・削除したときは、同じコミッ�
 
 利用者の AI 利用枠は小さいことがあります。次を目安に、必要以上に読み書きしないでください。厳密な制限ではありません。
 
-- 作業前にリポジトリ全体を探索しない。まず読むのは CLAUDE.md だけで足ります。必要になったら他のファイルを読んでください。リポジトリ直下の `Editor/` はテンプレート付属の補助スクリプトなので触りません。
+- 作業前にリポジトリ全体を探索しない。まず読むのは CLAUDE.md だけで足ります。必要になったら他のファイルを読んでください。
 - コンパイルやテストは試みない。クラウド環境に Unity は無く、コンパイルは利用者が Unity で行います。
 - 説明は要点だけにする。書いたコードをチャットに貼り直さない。
 - README は利用者が読む分だけ書く（目安 40 行以内）。
