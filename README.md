@@ -30,7 +30,7 @@ AI への指示はブラウザ上で完結します。AI は GitHub 上のリポ
 4. AI が `<ギミック名>/<ギミック名>.cs` と `README.md` を作り、GitHub にブランチを push します。**AI は `.cs` と `.md` しか作りません。**
 5. 画面の **Create PR** を押し、GitHub の PR ページで **Merge pull request → Confirm merge** します。
 6. GitHub Desktop で **Fetch origin → Pull origin** すると、手元にファイルが届きます。
-7. Unity に戻り、README の手順どおり `Add Component` します。この時点で Unity が `.meta` と `.asset`（UdonSharp の ProgramAsset）を自動生成します。
+7. Unity に戻ります。Unity が `.cs` を読み込むと、`.meta` と `.asset`（UdonSharp の ProgramAsset）が自動生成されます。README の手順どおり `Add Component` して動作を確認します。
 8. Console に赤いエラーが出たら、その文面をコピーして AI に貼り付けます。AI が `.cs` を直すので、5〜7 を繰り返します。
 9. 動いたら GitHub Desktop で **Commit → Push** します。Changes に出ている `.meta` / `.asset` を全部含めてください。これが最初のコミットになります。
 
@@ -48,6 +48,7 @@ AI の利用枠を節約するコツ: モデルは軽いもの（Claude なら S
 │   ├── <ギミック名>.cs
 │   ├── <ギミック名>.asset   Unity が自動生成（コミットする）
 │   └── README.md
+├── Editor/            ProgramAsset を自動生成する Unity 側の補助スクリプト（触らない）
 └── .claude/           Claude Code の設定とスキル
 ```
 
@@ -67,7 +68,7 @@ AI の利用枠を節約するコツ: モデルは軽いもの（Claude なら S
 
 | 症状 | 原因と対処 |
 | --- | --- |
-| Play を押した瞬間に Unity が落ちる | `.cs` と同名の `.asset` が無い。Unity 上で一度 `Add Component` し直し、生成された `.asset` をコミットする |
+| Play を押した瞬間に Unity が落ちる | `.cs` と同名の `.asset` が無い。Console に赤いエラーが無いことを確認してから、その `.cs` を右クリック → `Reimport` すると自動生成される |
 | Add Component のメニューに出てこない | Console にコンパイルエラーが出ている。エラー文を AI に貼る |
 | 別の PC で開いたら参照が外れている | `.meta` をコミットし忘れている。元の PC で `.meta` をコミット・Push する |
 | Interact しても反応しない | GameObject に `Collider` が無い。Box Collider などを追加する |
